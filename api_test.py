@@ -87,6 +87,32 @@ class APITester:
             return True
         return False
 
+    def logout_user(self, user_type: str) -> bool:
+        """Test user logout functionality"""
+        if not self.tokens[user_type]:
+            print(f"No token available for {user_type}")
+            return False
+
+        response = self.make_request('POST', '/auth/logout', token=self.tokens[user_type])
+
+        if response and response.status_code == 200:
+            # 清除本地存储的 token
+            old_token = self.tokens[user_type]
+            self.tokens[user_type] = None
+
+            # 验证使用已登出的 token 是否会被拒绝
+            verify_response = self.make_request('GET', '/users/profile', token=old_token)
+            if verify_response and verify_response.status_code == 401:
+                print(f"Successfully verified that logged out token is invalid")
+                return True
+            else:
+                print(f"Failed to verify logged out token invalidation")
+                return False
+
+        return False
+
+
+
     def test_user_profile(self, user_type: str) -> bool:
         response = self.make_request('GET', '/users/profile', token=self.tokens[user_type])
         return response and response.status_code == 200
@@ -165,9 +191,11 @@ if __name__ == "__main__":
     # # Create API tester instance
     tester = APITester()
     user_type = 'admin'
+    tester.register_user(user_type)
     tester.login_user(user_type)
-    # tester.get_todo_detail(user_type)
-    tester.delete_todo(user_type)
+    tester.test_user_profile(user_type)
+    tester.logout_user(user_type)
+
     # tester.change_todo_status(user_type,completed=True)
     # tester.get_todo_detail(user_type)
     # tester.get_todo_detail(user_type)
