@@ -36,14 +36,14 @@ class APITester:
     def make_request(self, method: str, endpoint: str, data: Optional[Dict] = None, files: Optional[Dict] = None,
                      token: Optional[str] = None) -> requests.Response:
         url = f"{self.base_url}{endpoint}"
-        headers = {'Content-Type': 'application/json'}
+        headers = {}
+        # headers = {'Content-Type': 'application/json'}
 
         # Print the request details
         print(f"\nRequest: {method} {url}")
 
         if data:
             print(f"Request: {json.dumps(data, indent=2)}")
-
         if token:
             headers['Authorization'] = f'Bearer {token}'
         print(f"Headers: {headers}")
@@ -192,4 +192,4 @@ if __name__ == "__main__":
     tester = APITester()
     user_type = 'user'
     tester.login_user(user_type)
-    tester.change_user_avatar(user_type, "/Users/fu.xie/personal/api-test-demo/input/11.jpg")  # 确保文件路径正确
+    tester.change_user_avatar(user_type, "/Users/fu.xie/personal/api-test-demo/input/12.jpg")  # 确保文件路径正确
